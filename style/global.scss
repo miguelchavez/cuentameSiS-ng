@@ -1,0 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100&family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;1,400;1,600;1,700&family=Cinzel:wght@400;500;600;700;800&family=Cuprum:wght@400;500;700&family=Fira+Sans+Extra+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400&family=Julius+Sans+One&display=swap');
+
+// font-family: 'Cuprum', sans-serif;
+// font-family: 'Fira Sans Extra Condensed', sans-serif;
+// font-family: 'Julius Sans One', sans-serif;
+// font-family: 'Cinzel', serif;
+
+body {
+    overflow-y: hidden !important;
+    overscroll-behavior: contain !important;
+    // https://developers.google.com/web/updates/2017/11/overscroll-behavior
+    transition: background-color 0.3s ease !important;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    border-left-color: #0fe8f7;
+    animation: spin 1s ease infinite;
+    margin-left: calc(50% - 64px);
+    margin-top: calc(50vh - 64px - 80px);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+img.avatar {
+    border-radius: 20px;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.175), 0 3px 3px rgba(0, 0, 0, 0.33);
+}
+
+li {
+    list-style: none;
+}
+
+.avatar-signin {
+    margin: 10px;
+    flex: 0 1 auto;
+    width: 180px !important;
+    height: 180px !important;
+}
+
+div.div-flex-centrado {
+    margin-top: calc(5% + 1px);
+    padding: 8px;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    height: 60vh;
+    width: calc(60vw + 1px);
+    min-width: 55vw;
+    // place-items: center;
+    border-radius: 20px;
+    background-color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+div.div-flex-centrado-alt {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    background-color: transparent;
+}
+
+.flex-inner {
+    flex: 1 1 auto;
+    align-self: center;
+}
+
+.firebaseui-card-content {
+    padding: 1px !important;
+}
+
+@media (min-width: 520px) {
+    div.div-centrado {
+        height: 90vh;
+        width: 520px;
+    }
+}
+
+input.error,
+select.error,
+div.error {
+    margin-top: 5px;
+    padding-left: 3px;
+    border-color: transparent transparent transparent rgba(236, 89, 144, 0.45) !important;
+    border-style: solid;
+    border-width: 1px 1px 1px 10px;
+    border-image: none 100% / 1 / 0 stretch;
+    background: rgba(205, 231, 252, 0.35) none repeat scroll 0% 0%;
+    transition: all 0.3s ease-in-out;
+}
+
+input.dirty-field,
+select.dirty-field,
+div.dirty-field {
+    margin-top: 5px;
+    padding-left: 3px;
+    border-color: transparent transparent transparent rgba(145, 255, 200, 0.3) !important;
+    border-style: solid;
+    border-width: 1px 1px 1px 10px;
+    border-image: none 100% / 1 / 0 stretch;
+    background: rgba(145, 255, 200, 0.1) none repeat scroll 0% 0%;
+    transition: all 0.3s ease-in-out;
+}
+
+input.no-error,
+select.no-error,
+div.no-error {
+    transition: all 0.3s ease-in-out;
+}
+
+.main-container {
+    padding-top: 1.2rem !important;
+}
+
+.main-container-signin {
+    padding-top: 1.2rem !important;
+    // background-image: url('/entrada.jpg');
+    background-color: #ff6b6b;
+    height: 100vh;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+// Personalizar colores del fab para el SpeedDial
+.MuiSpeedDialAction-fab:hover {
+    background-color: #01b47e !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.MuiSpeedDialAction-fab {
+    background-color: #017553 !important; //#039f71cc
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.MuiSpeedDialAction-staticTooltipLabel {
+    color: rgba(255, 255, 255, 0.7) !important;
+    background-color: #017553 !important; // #039f708c
+    font-size: 0.8rem !important;
+    padding: 3px 8px !important;
+}
+
+.MuiFormControl-root {
+    margin-top: 5px !important;
+}
+
+.hover-effect:after,
+.hover-effect:before {
+    transition: all 500ms ease;
+}
+
+.hover-effect {
+    position: relative;
+    z-index: 1;
+    height: 180px !important;
+    max-height: 180px !important;
+}
+.hover-effect:after {
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 100%;
+    // height: 1px;
+    content: '.';
+    color: transparent;
+    background-color: transparent; //#edf8f4;
+    visibility: hidden;
+    opacity: 0;
+    z-index: -1;
+    border-radius: 14px;
+    max-height: 180px !important;
+    height: 180px !important;
+}
+
+.hover-effect:hover:after {
+    opacity: 1;
+    visibility: visible;
+    height: 180px !important;
+    max-height: 180px !important;
+}
+
+.hover-effect .floatIcon {
+    visibility: none;
+    position: relative;
+    top: 90px;
+    left: 50%;
+    display: flex;
+    opacity: 0;
+    font-size: 1rem;
+}
+
+.hover-effect:hover .floatIcon {
+    color: #1cde85;
+    font-size: 2rem;
+    transform: scale(5);
+    position: absolute;
+    top: calc(50% - 20px);
+    left: calc(50% - 20px);
+    visibility: visible;
+    text-align: center;
+    display: flex;
+    opacity: 0.7;
+    transition: all 300ms ease;
+}
+
+.floatIcon {
+    pointer-events: visible;
+    cursor: pointer;
+}
+
+.boton_x {
+    border-radius: 8px;
+    box-shadow: 0 2px 5px 0 rgba(213, 217, 217, 0.5);
+
+    background: #fff;
+    border-radius: 3px;
+    border-color: #d5d9d9;
+    border-style: solid;
+    border-width: 1px;
+    cursor: pointer;
+}
