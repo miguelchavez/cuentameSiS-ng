@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 // Material UI
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { makeStyles } from '@material-ui/core/styles'
+import Avatar from '@material-ui/core/Avatar'
 import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container'
 import Divider from '@material-ui/core/Divider'
@@ -58,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
             '"Fira Sans Extra Condensed","-apple-system", "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto Condensed", "Source Sans Pro", Cantarell, Lato, Candara,"Segoe UI",  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
     },
     subTitulo: {
-        fontSize: '1.3rem',
+        fontSize: '1.5rem',
         fontWeight: 300,
         marginTop: 0,
         marginBottom: 1,
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     leyenda: {
         fontSize: '0.8rem',
         fontWeight: 100,
-        marginTop: 1,
+        marginTop: -8,
         marginBottom: 1,
         fontFamily:
             '"Fira Sans Extra Condensed","-apple-system", "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto Condensed", "Source Sans Pro", Cantarell, Lato, Candara,"Segoe UI",  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
@@ -147,6 +148,7 @@ const Signin = () => {
                                     <h2 className={classes.titulo}>Cuentame SiS</h2>
                                     <span className={classes.leyenda}>Student Information System</span>
                                     <h5 className={classes.subTitulo}>Inscripciones</h5>
+                                    <Avatar className='avatar-signin' src='/cuentameapp.png' variant='square' />
                                     <FirebaseAuth />
                                 </div>
                             </div>

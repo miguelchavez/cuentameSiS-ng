@@ -2,8 +2,6 @@ import { useUser } from '../utils/auth/useUser'
 
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-
-import Avatar from '@material-ui/core/Avatar'
 import Divider from '@material-ui/core/Divider'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
@@ -187,8 +185,6 @@ const FirebaseAuth = (props) => {
                 {/* <AnimatePresence> */}
                 <motion.div positionTransition initial={AnimateUp.initial} animate={AnimateUp.animate} exit={AnimateUp.exit}>
                     <div className='div-flex-centrado-alt'>
-                        <Avatar className='avatar-signin' src='/cuentameapp.png' variant='square' />
-
                         <TextField
                             className='flex-inner'
                             name='pasaporte'
