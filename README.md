@@ -1,15 +1,16 @@
-#Cuentame SiS
+# Cuentame SiS
+
 _antes conocido como TutorPlus_
 
 ```
 Version 2 Reloaded, Mid 2021
 ```
 
-##App de Inscripciones
+## App de Inscripciones
 
 Estará abierto a los padres de familia para el llenado de la ficha de inscricpión.
 
-####Authentication
+#### Authentication
 
 Se usa firebase authentication. Inicialmente la idea era usar las cuentas de familia creadas en el proceso de inscripcion. Sin embargo, esto trae el problema de que es primero, el huevo o la gallina. Es decir, que hacemos primero, crear la cuenta de familia para que pueda iniciar sesion en la app, o crear la cuenta una vez que se formalice la inscripcion.
 
@@ -33,9 +34,9 @@ user.updatePassword(newPassword)
     })
 ```
 
-####Firestore
+#### Firestore
 
-#####Colecciones
+##### Colecciones
 
 _Fichas_
 Las fichas de inscripcion contendrán todos los datos familiares que son comunes a una familia.
@@ -88,7 +89,7 @@ _Documentos_
 Adicionalmente, si se desea, puede contar con un repositorio de documentos por cada aspirante, como actas de nacimiento, certificados escolares oficiales, etc..
 Estos documentos se anexarían como imagenes escaneadas, subidas a firebase storage y referenciadas en el campo documentos del aspirante.
 
-####Inscripciones
+#### Inscripciones
 
 Tendrá acceso a la colección de fichas y alumnos, pudiendo escribir sólo los documentos creados por el usuario autentificado.
 
