@@ -253,7 +253,7 @@ function Copyright() {
     )
 }
 
-const Layout = ({ children, titulo, user, userMeta, darkMode, setDarkMode }) => {
+const Layout = ({ children, titulo, user, userMeta, darkMode, setDarkMode, signout }) => {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
     const tema = darkMode ? temaDark : temaLight
 
@@ -472,12 +472,8 @@ const Layout = ({ children, titulo, user, userMeta, darkMode, setDarkMode }) => 
                                         variant='contained'
                                         className={classes.botonSignout}
                                         onClick={() => {
-                                            // remoteCouch.logout().then(() => {
-                                            //     localDb.destroy().then(() => {
-                                            //         console.log('Db destroyed!')
-                                            //     })
-                                            //     router.push('/signin')
-                                            // })
+                                            console.log('Signout...')
+                                            signout()
                                         }}>
                                         Cerrar Sesión
                                     </Button>

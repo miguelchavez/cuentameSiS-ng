@@ -39,12 +39,27 @@ export default function initFirebase() {
                     console.error('BROWSER NOT SUPPORTED: persistence can only be enabled in Firefox, Chrome and Safari.')
                 }
             })
+        firebase
+            .auth()
+            .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                // SESSION:Existing and future Auth states are now persisted in the current
+                // session only. Closing the window would clear any existing state even
+                // if a user forgets to sign out.
+                console.log('AUTH LOCAL PERSISTANCE ENABLED')
+            })
+            .catch((error) => {
+                // Handle Errors here.
+                var errorCode = error.code
+                var errorMessage = error.message
+                console.log('Error when setting Auth Local Persistance:', error.message)
+            })
     } else {
         db = auth = firebase.auth() // firebase.firestore()
         fireApp = firebase
     }
 
-    //firebase.auth().languageCode = 'es';
+    firebase.auth().languageCode = 'es'
 }
 
 export { db, auth, fireApp }

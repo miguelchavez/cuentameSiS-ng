@@ -188,6 +188,7 @@ export default function Home(props) {
             darkMode={darkMode}
             setDarkMode={setDarkMode}
             userMeta={{}}
+            signout={logout}
             titulo='Bienvenido a Cuentame SiS | Inscripciones'>
             <Head>
                 <title>Cuentame SiS | Inscripciones</title>
