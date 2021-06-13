@@ -13,7 +13,7 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import IconButton from '@material-ui/core/IconButton'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { AnimateUp } from '../utils/motion-variants'
 
 import { fuego } from '@nandorojo/swr-firestore'
@@ -240,6 +240,8 @@ const FirebaseAuth = (props) => {
                     }
                     setError(_error_)
                 })
+        } else {
+            setError('Ingrese su dirección de correo electrónico')
         }
     }
 
@@ -275,94 +277,99 @@ const FirebaseAuth = (props) => {
     if (typeof user === 'undefined' || !user) {
         return (
             <>
-                {/* <AnimatePresence> */}
-                <motion.div positionTransition initial={AnimateUp.initial} animate={AnimateUp.animate} exit={AnimateUp.exit}>
-                    <div className='div-flex-centrado-alt'>
-                        <TextField
-                            className={classes.textField}
-                            name='username'
-                            id='username'
-                            label='Email'
-                            aria-label='Email'
-                            value={username}
-                            onChange={handleUsernameChange}
-                            onKeyPress={onKeyPressed}
-                            error={error !== ''}
-                            size='small'
-                            variant='filled'
-                            autoComplete='off'
-                            autoFocus
-                            required
-                        />
-                        <TextField
-                            className={classes.textField}
-                            name='password'
-                            id='password'
-                            type={showPassword ? 'text' : 'password'}
-                            label='Contraseña'
-                            aria-label='contraseña'
-                            value={password}
-                            onChange={handlePasswordChange}
-                            onKeyPress={onKeyPressed}
-                            helperText={error}
-                            error={error !== ''}
-                            size='small'
-                            variant='filled'
-                            autoComplete='off'
-                            required
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position='end' size='small'>
-                                        <IconButton
-                                            size='small'
-                                            aria-label='Ver/Ocultar Contraseña'
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}>
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <span className={classes.spanOr}>ó</span>
+                <AnimatePresence>
+                    <motion.div
+                        positionTransition
+                        initial={AnimateUp.initial}
+                        animate={AnimateUp.animate}
+                        exit={AnimateUp.exit}>
+                        <div className='div-flex-centrado-alt'>
+                            <TextField
+                                className={classes.textField}
+                                name='username'
+                                id='username'
+                                label='Email'
+                                aria-label='Email'
+                                value={username}
+                                onChange={handleUsernameChange}
+                                onKeyPress={onKeyPressed}
+                                error={error !== ''}
+                                size='small'
+                                variant='filled'
+                                autoComplete='off'
+                                autoFocus
+                                required
+                            />
+                            <TextField
+                                className={classes.textField}
+                                name='password'
+                                id='password'
+                                type={showPassword ? 'text' : 'password'}
+                                label='Contraseña'
+                                aria-label='contraseña'
+                                value={password}
+                                onChange={handlePasswordChange}
+                                onKeyPress={onKeyPressed}
+                                helperText={error}
+                                error={error !== ''}
+                                size='small'
+                                variant='filled'
+                                autoComplete='off'
+                                required
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position='end' size='small'>
+                                            <IconButton
+                                                size='small'
+                                                aria-label='Ver/Ocultar Contraseña'
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}>
+                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <FormControlLabel
+                                className={classes.switchLabel}
+                                control={
+                                    <Switch
+                                        className={classes.switchBase}
+                                        checked={newUser}
+                                        onChange={handleSwitchChange}
+                                        name='newUser'
+                                        inputProps={{ 'aria-label': 'Soy nuevo, registrarme' }}
+                                    />
+                                }
+                                label='Soy nuevo, registrarme'
+                            />
 
-                        <Button
-                            variant='outlined'
-                            color='secondary'
-                            onClick={signinWithGoogle}
-                            disableElevation
-                            className={classes.botonSigninWithGoogle}>
-                            <img src='/google.svg' style={{ width: '18px', heigth: '18x', marginRight: '10px' }} />
-                            Iniciar con Google
-                        </Button>
+                            <Box className={classes.cajaBotones}>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    onClick={newUser ? signup : signin}
+                                    className={classes.botonSignin}>
+                                    {newUser ? 'Registrarme' : 'Iniciar'}
+                                </Button>
+                            </Box>
 
-                        {newUser && <></>}
-                        <FormControlLabel
-                            className={classes.switchLabel}
-                            control={
-                                <Switch
-                                    className={classes.switchBase}
-                                    checked={newUser}
-                                    onChange={handleSwitchChange}
-                                    name='newUser'
-                                    inputProps={{ 'aria-label': 'Soy nuevo, registrarme' }}
-                                />
-                            }
-                            label='Soy nuevo, registrarme'
-                        />
+                            <span className={classes.spanOr}>&mdash;ó&mdash;</span>
 
-                        <Box className={classes.cajaBotones}>
                             <Button
-                                variant='contained'
-                                color='primary'
-                                onClick={newUser ? signup : signin}
-                                className={classes.botonSignin}>
-                                {newUser ? 'Registrarme' : 'Iniciar'}
+                                variant='outlined'
+                                color='secondary'
+                                onClick={signinWithGoogle}
+                                disableElevation
+                                className={classes.botonSigninWithGoogle}>
+                                <img src='/google.svg' style={{ width: '18px', heigth: '18x', marginRight: '10px' }} />
+                                Iniciar con Google
                             </Button>
-                        </Box>
-                    </div>
-                </motion.div>
-                {/* </AnimatePresence> */}
+
+                            {newUser && <></>}
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
             </>
         )
     } else if (typeof user !== 'undefined') {
