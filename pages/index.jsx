@@ -19,7 +19,6 @@ import { Container, Item } from '../utils/motion-variants'
 import Layout from '../components/layout'
 
 import { useRouter } from 'next/router'
-import { useUser } from '../utils/auth/useUser'
 import { useCollection, useDocument } from '@nandorojo/swr-firestore'
 import { useState, useEffect } from 'react'
 
@@ -178,8 +177,7 @@ export default function Home(props) {
         height: '50%',
     })
 
-    const { user, logout } = useUser()
-    const { toggleDarkMode, darkMode, setDarkMode } = props
+    const { toggleDarkMode, darkMode, setDarkMode, fuego, userProfile, authUser, logout } = props
 
     // if (user && sessionState == 1)
     return (
@@ -187,8 +185,10 @@ export default function Home(props) {
             toggleDarkMode={toggleDarkMode}
             darkMode={darkMode}
             setDarkMode={setDarkMode}
-            userMeta={{}}
             signout={logout}
+            fuego={fuego}
+            userProfile={userProfile}
+            authUser={authUser}
             titulo='Bienvenido a Cuentame SiS | Inscripciones'>
             <Head>
                 <title>Cuentame SiS | Inscripciones</title>

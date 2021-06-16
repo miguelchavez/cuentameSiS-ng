@@ -40,6 +40,7 @@ import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 import Brightness3Icon from '@material-ui/icons/Brightness3'
+import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto'
 import WbSunnyIcon from '@material-ui/icons/WbSunny'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import ExpandLess from '@material-ui/icons/ExpandLess'
@@ -55,6 +56,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 
 import { temaLight, temaDark } from '../style/temaCuentameApp'
+import MultiSwitch from './tristateswitch'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import React from 'react'
 
@@ -110,7 +112,14 @@ const useStyles = makeStyles((theme) => ({
         color: '#424242',
         fontSize: '1.25rem',
         padding: '0.1rem',
-        // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.24),0px 1px 3px 0px rgba(0,0,0,0.22)',
+        borderRadius: '50%',
+    },
+    iconoAuto: {
+        backgroundColor: theme.palette.esmeralda.light,
+        color: '#424242',
+        fontSize: '1.25rem',
+        padding: '0.1rem',
         boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.24),0px 1px 3px 0px rgba(0,0,0,0.22)',
         borderRadius: '50%',
     },
@@ -253,7 +262,7 @@ function Copyright() {
     )
 }
 
-const Layout = ({ children, titulo, user, userMeta, darkMode, setDarkMode, signout }) => {
+const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego, userProfile, authUser }) => {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
     const tema = darkMode ? temaDark : temaLight
 
@@ -280,65 +289,11 @@ const Layout = ({ children, titulo, user, userMeta, darkMode, setDarkMode, signo
         { icon: <LocalAtmIcon />, name: 'Orden de Pago' },
     ]
 
-    const YellowSwitch = withStyles({
-        switchBase: {
-            // color: tema.palette.grey[600],
-            '&$checked': {
-                color: tema.palette.warning.main,
-            },
-            '&$checked + $track': {
-                backgroundColor: tema.palette.warning.light,
-            },
-            '&$thumb': {
-                color: 'red',
-                backgroundColor: 'yellow',
-            },
-        },
-
-        checked: {},
-        track: {},
-        thumb: {},
-    })(Switch)
-
-    // useEffect(() => {
-    //     console.log('Layout >> Cambio la configuracion: ', config)
-    //     // config: Array of objects that contain the requested documents
-    //     if (config.length >= 1) {
-    //         // Solo deberia haber un resultado.
-    //         if (darkMode == config[0].darkMode) console.log('DarkMode NOT CHANGED from:', config[0].darkMode)
-    //         else console.log('DarkMode CHANGED to:', config[0].darkMode)
-    //         setDarkMode(config[0].darkMode)
-    //     } else {
-    //         console.log('Layout >> Config size is 0!')
-    //     }
-    // }, [config])
-
-    // const saveConfig = (newMode) => {
-    //     return userDb
-    //         .get('config_cuentameapp')
-    //         .then((doc) => {
-    //             // ok it exists, update it.
-    //             doc.darkMode = newMode
-    //             // setDarkMode(newMode)
-    //             console.log('Layout >> Saving config:', doc)
-    //             // save it
-    //             return userDb.put(doc)
-    //         })
-    //         .catch((error) => {
-    //             // No existe? Crearlo
-    //             if (error.status == 404) {
-    //                 const newDoc = {
-    //                     _id: 'config_cuentameapp',
-    //                     model: 'user-config',
-    //                     darkMode: newMode,
-    //                 }
-    //                 return userDb.put(newDoc)
-    //             } else {
-    //                 console.log('Layout SaveConfig >> ERROR:', error)
-    //                 return error
-    //             }
-    //         })
-    // }
+    const saveConfig = (val) => {
+        // val :  'L', 'D', 'Auto'
+        const old = { ...userProfile.data }
+        userProfile.update({ darkMode: val }, false)
+    }
 
     const matches = useMediaQuery(tema.breakpoints.down('xs'))
     const [drawerVariant, setDrawerVariant] = useState('permanent')
@@ -441,32 +396,19 @@ const Layout = ({ children, titulo, user, userMeta, darkMode, setDarkMode, signo
                                     exit={AnimateFadeIn.exit}>
                                     <Avatar
                                         className={classes.avatar}
-                                        src={userMeta.avatar || `https://i.pravatar.cc/128?u=${userMeta.email}`}
+                                        src={
+                                            authUser?.avatar ||
+                                            authUser?.photoURL ||
+                                            `https://i.pravatar.cc/128?u=${authUser?.email}`
+                                        }
                                     />
-                                    <Box>
-                                        <YellowSwitch
-                                            size='medium'
-                                            checked={!darkMode}
-                                            icon={<Brightness3Icon className={classes.iconoNoche} />}
-                                            checkedIcon={<WbSunnyIcon className={classes.iconoDia} />}
-                                            onChange={() => {
-                                                // save config with the new mode, which is the actual mode toggled.
-                                                // saveConfig(!darkMode)
-                                                //     .then((result) => {
-                                                //         console.log('Layout >> Resultado de guardar config:', result)
-                                                //     })
-                                                //     .catch((err) => {
-                                                //         console.log('Layout >> Error al guardar config:', err)
-                                                //     })
-                                            }}
-                                        />
-                                    </Box>
+                                    <Box></Box>
                                 </motion.div>
                             </Box>
                             <Box className={classes.cajaUsuario_}>
                                 <Box className={classes.cajaDatos}>
-                                    <p className={classes.nombre}>{userMeta?.nombre}</p>
-                                    <p className={classes.email}> {userMeta.email}</p>
+                                    <p className={classes.nombre}>{authUser?.displayName || authUser?.nombre}</p>
+                                    <p className={classes.email}> {authUser?.email}</p>
                                     <Button
                                         size='small'
                                         variant='contained'
@@ -477,6 +419,26 @@ const Layout = ({ children, titulo, user, userMeta, darkMode, setDarkMode, signo
                                         }}>
                                         Cerrar Sesión
                                     </Button>
+                                    <MultiSwitch
+                                        values={[
+                                            { icon: <WbSunnyIcon className={classes.iconoDia} />, value: 'L' },
+                                            {
+                                                icon: <BrightnessAutoIcon className={classes.iconoAuto} />,
+                                                value: 'Auto',
+                                            },
+                                            { icon: <Brightness3Icon className={classes.iconoNoche} />, value: 'D' },
+                                        ]}
+                                        selected={
+                                            userProfile?.data?.darkMode == 'D'
+                                                ? { icon: <Brightness3Icon className={classes.iconoNoche} />, value: 'D' }
+                                                : { icon: <WbSunnyIcon className={classes.iconoDia} />, value: 'L' }
+                                        }
+                                        onChange={(val) => {
+                                            console.log('LAYOUT >>> MultiSwitch On Change:', val)
+                                            // Guardamos en Settings del usuario
+                                            saveConfig(val)
+                                        }}
+                                    />
                                 </Box>
                             </Box>
                         </Box>

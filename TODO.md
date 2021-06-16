@@ -23,3 +23,5 @@
         }
 
 # Modelos
+
+grep -rn --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.next ".map(" ./
