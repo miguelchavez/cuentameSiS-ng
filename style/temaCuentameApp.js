@@ -12,7 +12,7 @@ const baseTheme = {
         secondary: { main: '#c238da', contrastText: '#fff' },
         warning: { main: '#ff9800' },
         error: { main: '#f44336' },
-        userBoxBackground: { light: '#eff7ff', main: '#4c5055' },
+        userBoxBackground: { light: '#eff7ff', main: '#ffebe6' },
         salmon: {
             light: '#fd8b87',
             main: '#fa6660',
@@ -99,7 +99,7 @@ const temaLight = createMuiTheme({
     palette: {
         ...baseTheme.palette,
         type: 'light',
-        userBoxBackground: { main: '#f2ffef', dark: '#4c5055' },
+        userBoxBackground: { main: '#fdf7f1', dark: '#4c5055' },
         background: {
             paper: '#fff',
             default: '#fafafa',

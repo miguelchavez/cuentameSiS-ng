@@ -236,7 +236,7 @@ const FirebaseAuth = (props) => {
                             _error_ += 'La contraseña es débil, mejorela.'
                             break
                         default:
-                            _error_ += ''
+                            _error_ += error.message
                     }
                     setError(_error_)
                 })
@@ -270,7 +270,21 @@ const FirebaseAuth = (props) => {
                 var email = error.email
                 // The firebase.auth.AuthCredential type that was used.
                 var credential = error.credential
-                // ...
+                const _error_ = ''
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        _error_ += 'Ese email ya esta en uso.'
+                        break
+                    case 'auth/invalid-email':
+                        _error_ += 'Email inválido.'
+                        break
+                    case 'auth/weak-password':
+                        _error_ += 'La contraseña es débil, mejorela.'
+                        break
+                    default:
+                        _error_ += error.message
+                }
+                setError(_error_)
             })
     }
 
