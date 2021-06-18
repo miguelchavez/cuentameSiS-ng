@@ -12,6 +12,13 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import { Fuego, FuegoProvider, useDocument } from '@nandorojo/swr-firestore'
 
+// Segunda BD de respaldo
+import PouchDB from 'pouchdb'
+//  pouchdb-browser causa error al hacer SSR, con dynamic import NO funciona: PouchDB is not a constructor
+// import Authentication from 'pouchdb-authentication'
+import PouchDBFind from 'pouchdb-find'
+import { Provider } from 'use-pouchdb'
+
 import { useUser } from '../utils/auth/useUser'
 
 const firebaseConfig = {
@@ -31,7 +38,11 @@ export default function MyApp({ Component, pageProps, router }) {
     const [darkMode, setDarkMode] = useState(isDark) // default mode based on useDarkMode.
     const [tema, setTema] = useState(temaLight)
 
+    // PouchDB.plugin(Authentication)
+    PouchDB.plugin(PouchDBFind)
+
     const { user, logout } = useUser()
+    const [userDb, setUserDb] = useState(new PouchDB('local'))
 
     const userProfile = useDocument(user ? `usuarios/${user.id}` : null, {
         listen: false,
@@ -64,24 +75,33 @@ export default function MyApp({ Component, pageProps, router }) {
         setTema(darkMode ? temaDark : temaLight)
     }, [darkMode])
 
+    useEffect(() => {
+        if (user && user.id) {
+            console.log('* userDb:', user.id)
+            setUserDb(new PouchDB(user.id))
+        }
+    }, [user])
+
     return (
         <>
-            <FuegoProvider fuego={fuego}>
-                <ThemeProvider theme={tema}>
-                    <SnackbarProvider maxSnack={6}>
-                        <Component
-                            {...pageProps}
-                            key={router.route}
-                            tema={tema}
-                            darkMode={darkMode}
-                            setDarkMode={setDarkMode}
-                            userProfile={userProfile}
-                            authUser={user}
-                            logout={logout}
-                        />
-                    </SnackbarProvider>
-                </ThemeProvider>
-            </FuegoProvider>
+            <Provider databases={{ userDb }} default='userDb'>
+                <FuegoProvider fuego={fuego}>
+                    <ThemeProvider theme={tema}>
+                        <SnackbarProvider maxSnack={6}>
+                            <Component
+                                {...pageProps}
+                                key={router.route}
+                                tema={tema}
+                                darkMode={darkMode}
+                                setDarkMode={setDarkMode}
+                                userProfile={userProfile}
+                                authUser={user}
+                                logout={logout}
+                            />
+                        </SnackbarProvider>
+                    </ThemeProvider>
+                </FuegoProvider>
+            </Provider>
         </>
     )
 }

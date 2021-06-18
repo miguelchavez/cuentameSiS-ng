@@ -73,7 +73,7 @@ export const AnimateScale = {
     },
 }
 
-export const Container = {
+export const Container_ = {
     hidden: { opacity: 0 },
     show: {
         opacity: 1,

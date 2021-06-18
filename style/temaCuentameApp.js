@@ -13,6 +13,7 @@ const baseTheme = {
         warning: { main: '#ff9800' },
         error: { main: '#f44336' },
         userBoxBackground: { light: '#eff7ff', main: '#ffebe6' },
+        anahuacPrimary: { main: '#ff7b53', contrastText: 'rgba(255,255,255,0.87)' },
         salmon: {
             light: '#fd8b87',
             main: '#fa6660',

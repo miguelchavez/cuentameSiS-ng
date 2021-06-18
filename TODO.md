@@ -25,3 +25,10 @@
 # Modelos
 
 grep -rn --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.next ".map(" ./
+
+    "email" : "azuldiaz@colegioanahuac.mx",
+    "curp" : "DITA030113MCMZPZA9",
+    "familia_clave" : "DiazTopete",
+    "matricula" : "15005",
+    "apellido_paterno" : "Diaz",
+    "apellido_materno" : "Topete",

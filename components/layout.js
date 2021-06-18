@@ -175,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto',
     },
     container: {
-        padding: theme.spacing(3),
+        padding: theme.spacing(1),
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
     },
@@ -188,9 +188,32 @@ const useStyles = makeStyles((theme) => ({
     fixedHeight: {
         height: 240,
     },
+    copyBox: {
+        bottom: 0,
+        left: '50%',
+        right: 0,
+        textAlign: 'start!important',
+        position: 'absolute',
+    },
+    cajaEscuela: {
+        display: 'flex',
+        flexFlow: 'column',
+        marginTop: '-8px',
+        padding: 8,
+        alignContent: 'center',
+        backgroundColor: theme.palette.userBoxBackground.main,
+    },
+    logoEscuela: {
+        margin: 0,
+        padding: 0,
+        marginTop: 6,
+        marginBottom: 16,
+        marginLeft: -6,
+        width: '168px',
+    },
     cajaUsuario: {
         display: 'flex',
-        marginTop: '-8px',
+        // marginTop: '-8px',
         padding: 5,
         paddingLeft: 2,
         backgroundColor: theme.palette.userBoxBackground.main,
@@ -255,7 +278,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Copyright() {
     return (
-        <Typography variant='body2' color='textSecondary' align='center'>
+        <Typography variant='body2' color='textSecondary'>
             {'Copyright © '}
             {new Date().getFullYear()} <a>&nbsp;Miguel Chavez, codea.me</a>
         </Typography>
@@ -387,6 +410,9 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
                     </div>
                     <Divider />
                     <List dense>
+                        <Box className={classes.cajaEscuela}>
+                            <img className={classes.logoEscuela} src='/colegioanahuac.svg' />
+                        </Box>
                         <Box className={classes.cajaUsuario}>
                             <Box className={classes.cajaDatos}>
                                 <motion.div
@@ -419,26 +445,36 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
                                         }}>
                                         Cerrar Sesión
                                     </Button>
-                                    <MultiSwitch
-                                        values={[
-                                            { icon: <WbSunnyIcon className={classes.iconoDia} />, value: 'L' },
-                                            {
-                                                icon: <BrightnessAutoIcon className={classes.iconoAuto} />,
-                                                value: 'Auto',
-                                            },
-                                            { icon: <Brightness3Icon className={classes.iconoNoche} />, value: 'D' },
-                                        ]}
-                                        selected={
-                                            userProfile?.data?.darkMode == 'D'
-                                                ? { icon: <Brightness3Icon className={classes.iconoNoche} />, value: 'D' }
-                                                : { icon: <WbSunnyIcon className={classes.iconoDia} />, value: 'L' }
-                                        }
-                                        onChange={(val) => {
-                                            console.log('LAYOUT >>> MultiSwitch On Change:', val)
-                                            // Guardamos en Settings del usuario
-                                            saveConfig(val)
-                                        }}
-                                    />
+                                    {userProfile && userProfile.data && (
+                                        <MultiSwitch
+                                            values={[
+                                                { icon: <WbSunnyIcon className={classes.iconoDia} />, value: 'L' },
+                                                {
+                                                    icon: <BrightnessAutoIcon className={classes.iconoAuto} />,
+                                                    value: 'Auto',
+                                                },
+                                                { icon: <Brightness3Icon className={classes.iconoNoche} />, value: 'D' },
+                                            ]}
+                                            selected={
+                                                userProfile.data.darkMode == 'Auto'
+                                                    ? {
+                                                          icon: <BrightnessAutoIcon className={classes.iconoAuto} />,
+                                                          value: 'Auto',
+                                                      }
+                                                    : userProfile.data.darkMode == 'D'
+                                                    ? {
+                                                          icon: <Brightness3Icon className={classes.iconoNoche} />,
+                                                          value: 'D',
+                                                      }
+                                                    : { icon: <WbSunnyIcon className={classes.iconoDia} />, value: 'L' }
+                                            }
+                                            onChange={(val) => {
+                                                console.log('LAYOUT >>> MultiSwitch On Change:', val)
+                                                // Guardamos en Settings del usuario
+                                                saveConfig(val)
+                                            }}
+                                        />
+                                    )}
                                 </Box>
                             </Box>
                         </Box>
@@ -551,7 +587,7 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
                     <div className={classes.appBarSpacer} />
                     <Container maxWidth='xl' className={classes.container}>
                         {children}
-                        <Box pt={4}>
+                        <Box pt={1} className={classes.copyBox}>
                             <Copyright />
                         </Box>
                     </Container>
