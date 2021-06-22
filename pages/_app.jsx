@@ -10,7 +10,7 @@ import React from 'react'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
-import { Fuego, FuegoProvider, useDocument } from '@nandorojo/swr-firestore'
+import { Fuego, FuegoProvider } from '@nandorojo/swr-firestore'
 
 // Segunda BD de respaldo
 import PouchDB from 'pouchdb'
@@ -19,7 +19,8 @@ import PouchDB from 'pouchdb'
 import PouchDBFind from 'pouchdb-find'
 import { Provider } from 'use-pouchdb'
 
-import { useUser } from '../utils/auth/useUser'
+// import { useUser } from '../utils/auth/useUser'
+import { UserProvider } from '../context/user'
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
@@ -41,33 +42,8 @@ export default function MyApp({ Component, pageProps, router }) {
     // PouchDB.plugin(Authentication)
     PouchDB.plugin(PouchDBFind)
 
-    const { user, logout } = useUser()
+    // const { user, logout } = useUser()
     const [userDb, setUserDb] = useState(new PouchDB('local'))
-
-    const userProfile = useDocument(user ? `usuarios/${user.id}` : null, {
-        listen: false,
-        ignoreFirestoreDocumentSnapshotField: false,
-    })
-
-    useEffect(() => {
-        console.log('Layout >> Cambio en perfil: ', userProfile)
-        if (userProfile.data) {
-            // Solo deberia haber un resultado.
-            if (userProfile.data.darkMode == 'Auto') {
-                // Este tiene precedencia. Auto significa que se pone lo que dice el browser.
-                console.log(
-                    '<Auto> DEVICE Broser DarkMode enabled:',
-                    window.matchMedia('(prefers-color-scheme: dark)').matches
-                )
-                setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)
-            } else {
-                console.log('<User> Mode:', userProfile.data.darkMode)
-                setDarkMode(userProfile.data.darkMode === 'D' ? true : false)
-            }
-        } else {
-            console.log('Layout >> No userProfile')
-        }
-    }, [userProfile, darkMode])
 
     // change theme when mode changes (via toggle on the Appbar)
     useEffect(() => {
@@ -75,31 +51,30 @@ export default function MyApp({ Component, pageProps, router }) {
         setTema(darkMode ? temaDark : temaLight)
     }, [darkMode])
 
-    useEffect(() => {
-        if (user && user.id) {
-            console.log('* userDb:', user.id)
-            setUserDb(new PouchDB(user.id))
-        }
-    }, [user])
+    // useEffect(() => {
+    //     if (user && user.id) {
+    //         console.log('* userDb:', user.id)
+    //         setUserDb(new PouchDB(user.id))
+    //     }
+    // }, [user])
 
     return (
         <>
             <Provider databases={{ userDb }} default='userDb'>
                 <FuegoProvider fuego={fuego}>
-                    <ThemeProvider theme={tema}>
-                        <SnackbarProvider maxSnack={6}>
-                            <Component
-                                {...pageProps}
-                                key={router.route}
-                                tema={tema}
-                                darkMode={darkMode}
-                                setDarkMode={setDarkMode}
-                                userProfile={userProfile}
-                                authUser={user}
-                                logout={logout}
-                            />
-                        </SnackbarProvider>
-                    </ThemeProvider>
+                    <UserProvider>
+                        <ThemeProvider theme={tema}>
+                            <SnackbarProvider maxSnack={6}>
+                                <Component
+                                    {...pageProps}
+                                    key={router.route}
+                                    tema={tema}
+                                    darkMode={darkMode}
+                                    setDarkMode={setDarkMode}
+                                />
+                            </SnackbarProvider>
+                        </ThemeProvider>
+                    </UserProvider>
                 </FuegoProvider>
             </Provider>
         </>

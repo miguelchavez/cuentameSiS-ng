@@ -1,4 +1,5 @@
-import { useUser } from '../utils/auth/useUser'
+// import { useUser } from '../utils/auth/useUser'
+import { useUserState } from '../context/user'
 
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -128,7 +129,7 @@ const FirebaseAuth = (props) => {
     const [error, setError] = useState('')
     const [loggedIn, setLoggedIn] = useState(false)
 
-    const { user, logout } = useUser()
+    const { user } = useUserState()
     const router = useRouter()
 
     const handleClickShowPassword = () => setShowPassword(!showPassword)
@@ -258,19 +259,19 @@ const FirebaseAuth = (props) => {
                 var credential = result.credential
                 console.log('SIGNIN WITH GOOGLE:', result)
                 // This gives you a Google Access Token. You can use it to access the Google API.
-                var token = credential.accessToken
+                let token = credential.accessToken
                 // The signed-in user info.
-                var user = result.user
+                let user = result.user
             })
             .catch((error) => {
                 // Handle Errors here.
-                var errorCode = error.code
-                var errorMessage = error.message
+                const errorCode = error.code
+                const errorMessage = error.message
                 // The email of the user's account used.
-                var email = error.email
+                const email = error.email
                 // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential
-                const _error_ = ''
+                const credential = error.credential
+                let _error_ = ''
                 switch (error.code) {
                     case 'auth/email-already-in-use':
                         _error_ += 'Ese email ya esta en uso.'

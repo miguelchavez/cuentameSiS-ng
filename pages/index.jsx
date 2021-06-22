@@ -35,6 +35,8 @@ import { useRouter } from 'next/router'
 import { useCollection, useDocument } from '@nandorojo/swr-firestore'
 import { useState, useEffect } from 'react'
 
+import { useUserState } from '../context/user'
+
 import PouchDB from 'pouchdb'
 import { useFind, useDoc } from 'use-pouchdb'
 
@@ -70,6 +72,19 @@ const useStyles = makeStyles((theme) => ({
     formControl: {
         margin: theme.spacing(1),
         minWidth: 120,
+    },
+    grupo: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        [theme.breakpoints.up('md')]: {
+            flexWrap: 'nowrap',
+        },
+        '&>.MuiFormControl-root': {
+            margin: theme.spacing(1),
+            minWidth: '20ch',
+        },
     },
     chips: {
         display: 'flex',
@@ -125,7 +140,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Home(props) {
+const Home = (props) => {
+    const { user } = useUserState()
     const router = useRouter()
     const styles = useStyles()
     const shadowStyles = useFadedShadowStyles()
@@ -135,7 +151,7 @@ export default function Home(props) {
     })
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
-    const { toggleDarkMode, darkMode, setDarkMode, fuego, userProfile, authUser, logout } = props
+    const { toggleDarkMode, darkMode, setDarkMode, fuego } = props
 
     // Estados
     const [showFicha, setShowFicha] = useState(false)
@@ -155,7 +171,7 @@ export default function Home(props) {
 
     //ficha de inscripcion del usuario
     const ficha = useCollection('fichas', {
-        where: ['owner', '==', authUser?.id],
+        where: ['owner', '==', user?.id],
         listen: false,
     })
 
@@ -194,7 +210,7 @@ export default function Home(props) {
         return [
             {
                 name: 'Nombre Completo',
-                group: true,
+                type: 'group',
                 items: [
                     { name: 'nombre_padre', label: 'Nombre', type: 'text', required: true, autofocus: true },
                     { name: 'apaterno_padre', label: 'Apellido Paterno', type: 'text', required: true, autofocus: false },
@@ -203,7 +219,7 @@ export default function Home(props) {
             },
             {
                 name: 'Telefonos',
-                group: true,
+                type: 'group',
                 items: [
                     {
                         name: 'telTrabajo_padre',
@@ -220,7 +236,7 @@ export default function Home(props) {
             { name: 'email_padre', label: 'Correo electrónico', type: 'email', required: true, autofocus: false },
             {
                 name: 'Domicilio',
-                group: true,
+                type: 'group',
                 items: [
                     {
                         name: 'domicilioPais_padre',
@@ -338,59 +354,69 @@ export default function Home(props) {
 
     const steps = getSteps()
 
-    function getStepContent(stepIndex) {
+    const renderField = (field) => {
+        if (field.type == 'text' || field.type == 'number' || field.type == 'password' || field.type == 'email') {
+            return (
+                <TextEdit
+                    formState={formState}
+                    control={control}
+                    type={field.type}
+                    multiline={false}
+                    autofocus={field.autofocus}
+                    field_name={field.name}
+                    field_label={field.label}
+                    required={field.required}
+                    default_value='' // fixme
+                />
+            )
+        } else if (field.type == 'phone') {
+            return (
+                <PhoneEdit
+                    formState={formState}
+                    control={control}
+                    type={field.type}
+                    autofocus={field.autofocus}
+                    field_name={field.name}
+                    field_label={field.label}
+                    required={field.required}
+                    default_value='' // fixme
+                />
+            )
+        } else if (field.type == 'edit_select') {
+            return (
+                <AutoCompleter
+                    formState={formState}
+                    control={control}
+                    type={field.type}
+                    multi={false}
+                    options={field.options}
+                    autofocus={field.autofocus}
+                    field_name={field.name}
+                    field_label={field.label}
+                    required={field.required}
+                    default_value='' // fixme
+                />
+            )
+        }
+    }
+
+    const getStepContent = (stepIndex) => {
         switch (stepIndex) {
             case getStepNumber('padre'):
                 return (
                     <React.Fragment>
                         {getPadreFields().map((field) => {
-                            if (
-                                field.type == 'text' ||
-                                field.type == 'number' ||
-                                field.type == 'password' ||
-                                field.type == 'email'
-                            ) {
+                            if (field.type == 'group') {
+                                // hacemos un div flex de campos
                                 return (
-                                    <TextEdit
-                                        formState={formState}
-                                        control={control}
-                                        type={field.type}
-                                        multiline={false}
-                                        autofocus={field.autofocus}
-                                        field_name={field.name}
-                                        field_label={field.label}
-                                        required={field.required}
-                                        default_value='' // fixme
-                                    />
+                                    <div className={styles.grupo}>
+                                        {field.items.map((item) => {
+                                            return renderField(item)
+                                        })}
+                                    </div>
                                 )
-                            } else if (field.type == 'phone') {
-                                return (
-                                    <PhoneEdit
-                                        formState={formState}
-                                        control={control}
-                                        type={field.type}
-                                        autofocus={field.autofocus}
-                                        field_name={field.name}
-                                        field_label={field.label}
-                                        required={field.required}
-                                        default_value='' // fixme
-                                    />
-                                )
-                            } else if (field.type == 'edit_select') {
-                                return (
-                                    <AutoCompleter
-                                        formState={formState}
-                                        control={control}
-                                        type={field.type}
-                                        multi={false}
-                                        options={field.options}
-                                        autofocus={field.autofocus}
-                                        field_name={field.name}
-                                        field_label={field.label}
-                                        required={field.required}
-                                        default_value='' // fixme
-                                    />
-                                )
+                            } else {
+                                return renderField(field)
                             }
                         })}
                     </React.Fragment>
@@ -407,18 +433,15 @@ export default function Home(props) {
             toggleDarkMode={toggleDarkMode}
             darkMode={darkMode}
             setDarkMode={setDarkMode}
-            signout={logout}
             fuego={fuego}
-            userProfile={userProfile}
-            authUser={authUser}
             titulo='Inscripciones Colegio Anahuac'>
             <Head>
                 <title>Cuentame SiS | Inscripciones</title>
             </Head>
             <Container>
-                {authUser && !showFicha && (
+                {user && !showFicha && (
                     <Typography component='p' variant='subtitle1' color='inherit' paragraph className={styles.title}>
-                        Bienvenido, {authUser.nombre || authUser.displayName}.{' '}
+                        Bienvenido, {user.nombre || user.displayName}.{' '}
                         {ficha && ficha.length > 0 ? (
                             <>
                                 <span>Tienes una ficha de inscripción, </span>{' '}
@@ -516,3 +539,5 @@ export default function Home(props) {
         </Layout>
     )
 }
+
+export default Home

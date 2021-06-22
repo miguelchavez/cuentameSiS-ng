@@ -63,6 +63,9 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { AnimateFadeIn } from '../utils/motion-variants'
 
+import { useUserState } from '../context/user'
+import { useDocument } from '@nandorojo/swr-firestore'
+
 // https://github.com/mui-org/material-ui/blob/master/docs/src/pages/getting-started/templates/dashboard/Dashboard.js
 
 const drawerWidth = 240
@@ -285,14 +288,20 @@ function Copyright() {
     )
 }
 
-const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego, userProfile, authUser }) => {
+const Layout = ({ children, titulo, darkMode, setDarkMode, fuego }) => {
+    const { user, logout } = useUserState()
+    const router = useRouter()
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
     const tema = darkMode ? temaDark : temaLight
 
-    const router = useRouter()
     const [open, setOpen] = useState(true) // drawer
     const [openSpeedDial, setOpenSpeedDial] = useState(false) // SpeedDial
     const [selectedIndex, setSelectedIndex] = useState(router.route)
+    const [drawerVariant, setDrawerVariant] = useState('permanent')
+
+    const classes = useStyles()
+    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
+    const matches = useMediaQuery(tema.breakpoints.down('xs'))
 
     const handleDrawerToggle = () => {
         setOpen(!open)
@@ -303,8 +312,6 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
     const handleOpenSpeedDial = () => {
         setOpenSpeedDial(true)
     }
-    const classes = useStyles()
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
 
     const speedDialActions = [
         { icon: <AccountBalanceIcon />, name: 'Financiadora' },
@@ -312,14 +319,36 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
         { icon: <LocalAtmIcon />, name: 'Orden de Pago' },
     ]
 
+    const userProfile = useDocument(user ? `usuarios/${user.id}` : null, {
+        listen: false,
+        ignoreFirestoreDocumentSnapshotField: false,
+    })
+
     const saveConfig = (val) => {
         // val :  'L', 'D', 'Auto'
         const old = { ...userProfile.data }
         userProfile.update({ darkMode: val }, false)
     }
 
-    const matches = useMediaQuery(tema.breakpoints.down('xs'))
-    const [drawerVariant, setDrawerVariant] = useState('permanent')
+    useEffect(() => {
+        console.log('Layout >> Cambio en perfil: ', userProfile)
+        if (userProfile.data) {
+            // Solo deberia haber un resultado.
+            if (userProfile.data.darkMode == 'Auto') {
+                // Este tiene precedencia. Auto significa que se pone lo que dice el browser.
+                console.log(
+                    '<Auto> DEVICE Broser DarkMode enabled:',
+                    window.matchMedia('(prefers-color-scheme: dark)').matches
+                )
+                setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)
+            } else {
+                console.log('<User> Mode:', userProfile.data.darkMode)
+                setDarkMode(userProfile.data.darkMode === 'D' ? true : false)
+            }
+        } else {
+            console.log('Layout >> No userProfile')
+        }
+    }, [userProfile])
 
     useEffect(() => {
         // console.log(`theme.breakpoints.up('md') matches: ${matches}`)
@@ -422,26 +451,22 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
                                     exit={AnimateFadeIn.exit}>
                                     <Avatar
                                         className={classes.avatar}
-                                        src={
-                                            authUser?.avatar ||
-                                            authUser?.photoURL ||
-                                            `https://i.pravatar.cc/128?u=${authUser?.email}`
-                                        }
+                                        src={user?.avatar || user?.photoURL || `https://i.pravatar.cc/128?u=${user?.email}`}
                                     />
                                     <Box></Box>
                                 </motion.div>
                             </Box>
                             <Box className={classes.cajaUsuario_}>
                                 <Box className={classes.cajaDatos}>
-                                    <p className={classes.nombre}>{authUser?.displayName || authUser?.nombre}</p>
-                                    <p className={classes.email}> {authUser?.email}</p>
+                                    <p className={classes.nombre}>{user?.displayName || user?.nombre}</p>
+                                    <p className={classes.email}> {user?.email}</p>
                                     <Button
                                         size='small'
                                         variant='contained'
                                         className={classes.botonSignout}
                                         onClick={() => {
                                             console.log('Signout...')
-                                            signout()
+                                            logout()
                                         }}>
                                         Cerrar Sesión
                                     </Button>
@@ -479,49 +504,6 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
                             </Box>
                         </Box>
                         <Divider />
-                        {user && roles && roles.includes('admin') && (
-                            <>
-                                <ListSubheader inset>Administración</ListSubheader>
-                                <ListItem
-                                    button
-                                    selected={selectedIndex === '/roles'}
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        setSelectedIndex(router.route)
-                                        router.push('/roles', '/roles')
-                                    }}>
-                                    <ListItemIcon className={classes.iconRootDense}>
-                                        <SecurityIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary='Roles y permisos' />
-                                </ListItem>
-                                <ListItem
-                                    button
-                                    selected={selectedIndex === '/orgs' || selectedIndex.includes('/org/')}
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        setSelectedIndex(router.route)
-                                        router.push('/orgs', '/orgs')
-                                    }}>
-                                    <ListItemIcon className={classes.iconRootDense}>
-                                        <LocationCityIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary='Organizaciones' />
-                                </ListItem>
-                                <ListItem
-                                    button
-                                    selected={selectedIndex === '/usuarios' || selectedIndex.includes('/usuario/')}
-                                    onClick={(e) => {
-                                        router.push('/usuarios', '/usuarios')
-                                        setSelectedIndex(router.route)
-                                    }}>
-                                    <ListItemIcon className={classes.iconRootDense}>
-                                        <PeopleAltIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary='Usuarios' />
-                                </ListItem>
-                            </>
-                        )}
                         <ListSubheader inset>General</ListSubheader>
                         <ListItem
                             button
@@ -596,5 +578,4 @@ const Layout = ({ children, titulo, user, darkMode, setDarkMode, signout, fuego,
         </>
     )
 }
-
 export default Layout
