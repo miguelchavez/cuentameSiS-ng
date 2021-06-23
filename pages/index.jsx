@@ -27,7 +27,7 @@ import { useGutterBorderedGridStyles } from '@mui-treasury/styles/grid/gutterBor
 import { motion } from 'framer-motion'
 import { Container_, FadeInUp } from '../utils/motion-variants'
 
-import Layout from '../components/layout'
+// import Layout from '../components/layout'
 import { TextEdit, CheckBox, PhoneEdit, Selector, AutoCompleter, ChipSelect } from '../components/editFields'
 import { getMunicipios } from '../utils/strings'
 
@@ -429,15 +429,6 @@ const Home = (props) => {
     }
 
     return (
-        <Layout
-            toggleDarkMode={toggleDarkMode}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            fuego={fuego}
-            titulo='Inscripciones Colegio Anahuac'>
-            <Head>
-                <title>Cuentame SiS | Inscripciones</title>
-            </Head>
             <Container>
                 {user && !showFicha && (
                     <Typography component='p' variant='subtitle1' color='inherit' paragraph className={styles.title}>
@@ -536,7 +527,6 @@ const Home = (props) => {
                     )}
                 </motion.div>
             </Container>
-        </Layout>
     )
 }
 

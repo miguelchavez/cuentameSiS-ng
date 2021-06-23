@@ -19,8 +19,8 @@ import PouchDB from 'pouchdb'
 import PouchDBFind from 'pouchdb-find'
 import { Provider } from 'use-pouchdb'
 
-// import { useUser } from '../utils/auth/useUser'
 import { UserProvider } from '../context/user'
+import Layout from '../components/layout'
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
@@ -58,6 +58,7 @@ export default function MyApp({ Component, pageProps, router }) {
     //     }
     // }, [user])
 
+
     return (
         <>
             <Provider databases={{ userDb }} default='userDb'>
@@ -65,13 +66,21 @@ export default function MyApp({ Component, pageProps, router }) {
                     <UserProvider>
                         <ThemeProvider theme={tema}>
                             <SnackbarProvider maxSnack={6}>
-                                <Component
-                                    {...pageProps}
-                                    key={router.route}
-                                    tema={tema}
-                                    darkMode={darkMode}
-                                    setDarkMode={setDarkMode}
-                                />
+                                {!router.pathname.startsWith('/signin') ? (<Layout darkMode={darkMode} setDarkMode={setDarkMode} titulo='Inscripciones Colegio Anáhuac'>
+                                    <Component
+                                        {...pageProps}
+                                        key={router.route}
+                                        tema={tema}
+                                        darkMode={darkMode}
+                                        setDarkMode={setDarkMode}
+                                    />
+                                </Layout>):(<Component
+                                        {...pageProps}
+                                        key={router.route}
+                                        tema={tema}
+                                        darkMode={darkMode}
+                                        setDarkMode={setDarkMode}
+                                    />)}
                             </SnackbarProvider>
                         </ThemeProvider>
                     </UserProvider>

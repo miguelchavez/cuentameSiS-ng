@@ -7,7 +7,7 @@
   "parserOptions": {
     "sourceType": "module"
   },
-  globals: {
+  "globals": {
     "after": true,
     "afterEach": true,
     "before": true,
