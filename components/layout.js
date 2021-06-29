@@ -509,14 +509,25 @@ const Layout = ({ children, titulo, darkMode, setDarkMode, fuego }) => {
                             button
                             selected={selectedIndex === '/financiadoras' || selectedIndex.includes('/financiadora/')}
                             onClick={(e) => {
-                                router.push('/proyectos', '/financiadoras')
+                                router.push('/perfil')
                                 setSelectedIndex(router.route)
                             }}>
                             <ListItemIcon className={classes.iconRootDense}>
                                 <AccountBalanceIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Financiadoras' />
+                            <ListItemText primary='Demo' />
+                        </ListItem> 
+                        <Link href='/perfil' shallow={true} passHref>
+                        <ListItem
+                            button
+                            selected={selectedIndex === '/financiadoras' || selectedIndex.includes('/financiadora/')}
+                            >
+                            <ListItemIcon className={classes.iconRootDense}>
+                                <AccountBalanceIcon />
+                            </ListItemIcon>
+                            <ListItemText primary='Demos' />
                         </ListItem>
+                        </Link>
                     </List>
                     {/* Contenido de menu: components/menuItems.js */}
                     <Divider />
