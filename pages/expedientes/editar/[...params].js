@@ -48,7 +48,7 @@ export default function editarExpedientes(props) {
         deleteDocument,
     } = useDocument(instanceId ? `expedientes/${instanceId}` : null, {
         listen: false, // No queremos que al estar editando se sobre escriban datos...
-        // shouldRetryOnError: false,
+        shouldRetryOnError: false,
         parseDates: ['createdAt', 'lastUpdated.date'],
         onSuccess: () => {
             // console.log('[ 55 editarExpediente :: onUseDocument got ] Expediente:', expediente)

@@ -41,7 +41,7 @@ const perfil = (props) => {
         deleteDocument,
     } = useDocument(user?.id ? `usuarios/${user?.id}` : null, {
         listen: false, // No queremos que al estar editando se sobre escriban datos...
-        // shouldRetryOnError: false,
+        shouldRetryOnError: false,
         parseDates: ['createdAt', 'lastUpdated.date'],
         onSuccess: () => {
             // console.log('[ 47 editarPerfil :: onUseDocument got ] Perfil:', perfil)
