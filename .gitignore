@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+node_modules*
 /.pnp
 .pnp.js
 
@@ -21,6 +22,7 @@ components/3rdParty/material-ui-multiple-dates-picker/app/src/logo.svg
 components/3rdParty/material-ui-multiple-dates-picker/app/src/serviceWorker.js
 components/3rdParty/material-ui-multiple-dates-picker/build
 components/3rdParty/material-ui-multiple-dates-picker/demo
+externalDeps
 
 # testing
 /coverage
