@@ -1,3 +1,5 @@
+import { md5 } from 'hash-wasm'
+
 const titleCase = (str) => {
     return str
         .toLowerCase()
@@ -2623,4 +2625,9 @@ const getMunicipios = (estado) => {
     return typeof data !== 'undefned' ? [] : data.mun
 }
 
-export { titleCase, getMunicipios }
+const getMd5 = async (text) => {
+    const _hash_ = await md5(text)
+    return _hash_
+}
+
+export { titleCase, getMunicipios, getMd5 }

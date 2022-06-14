@@ -1,65 +1,151 @@
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
+import { useEffect, useState } from 'react'
+
+import {
+    getAuth,
+    onAuthStateChanged,
+    setPersistence,
+    browserSessionPersistence,
+    GoogleAuthProvider,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+} from '@firebase/auth'
+import { getApp, getApps, initializeApp } from '@firebase/app'
+import { getFirestore, enableIndexedDbPersistence, Firestore } from '@firebase/firestore'
 
 const config = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
     databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    // storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 }
 
-let db = null
-let auth = null
-let fireApp = null
+const state = {
+    db: null,
+    auth: null,
+    fireApp: null,
+    user: null,
+}
 
 export default function initFirebase() {
-    if (!firebase.apps.length) {
-        console.log('Iniciando firebase...')
-        firebase.initializeApp(config)
-        db = firebase.firestore()
-        auth = firebase.auth()
-        fireApp = firebase
-        // https://firebase.google.com/docs/firestore/manage-data/enable-offline
-        // En la Web, la persistencia sin conexión solo es compatible con los navegadores web Chrome, Firefox y Safari.
-        db.enablePersistence()
+    let unsubscribe = null
+
+    useEffect(() => {
+        console.log('[ initFirebase :: onUser ] User:', state.user)
+    }, [state.user])
+
+    if (!getApps().length && state.db == null) {
+        console.log('[ initFirebase ] Inicializando firebae...')
+
+        state.fireApp = initializeApp(config)
+        state.db = getFirestore(state.fireApp)
+        state.auth = getAuth(state.fireApp)
+
+        state.auth.languageCode = 'es'
+        // instalamos observadores de estado de autenticacion
+        const unsubscribe = onAuthStateChanged(state.auth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                console.log('[ initFirebase :: onAuthStateChanged ] User:', user)
+                state.user = user
+            } else {
+                console.log('[ initFirebase :: onAuthStateChanged ] NO USER')
+            }
+        })
+
+        // establecemos persistencia de autenticacion
+        // browserLocalPersistence / browserSessionPersistence
+
+        // browserSessionPersistance: Solo para el tab actual, si se cierra se pierde la autenticacion, puede haber dif usuarios en cada tab del browser. Persiste entre page RELOADS
+        // browserLocalPersistence: Sesion guardada en el browser, no solo en un tab. En cada tab, estara el mismo usuario. Se debe hacer 'logout' para borrar la sesion.
+        // inMemoryPersistence: Solo persiste mientras no se haga reload de pagina.
+        // Lo mejor: browserLocal... porque podemos tener varios usuarios en diferentes tabs para pruebas/trabajo. Y es mas seguro, al cerrar tab/browser se desautentica.
+
+        setPersistence(state.auth, browserSessionPersistence)
             .then(() => {
-                console.log('Ok, Persistence enabled!')
-            })
-            .catch((err) => {
-                if (err.code == 'failed-precondition') {
-                    // Multiple tabs open, persistence can only be enabled
-                    // in one tab at a a time.
-                    console.error('PRECONDITION FAILED: persistence can only be enabled in one tab at a time')
-                } else if (err.code == 'unimplemented') {
-                    // The current browser does not support all of the
-                    // features required to enable persistence
-                    console.error('BROWSER NOT SUPPORTED: persistence can only be enabled in Firefox, Chrome and Safari.')
-                }
-            })
-        firebase
-            .auth()
-            .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-            .then(() => {
-                // SESSION:Existing and future Auth states are now persisted in the current
+                // Existing and future Auth states are now persisted in the current
                 // session only. Closing the window would clear any existing state even
                 // if a user forgets to sign out.
-                console.log('AUTH LOCAL PERSISTANCE ENABLED')
+                // ...
+                // New sign-in will be persisted with session persistence.
+                console.log('[ initFirebase :: Auth Presistence ] Ok, Persistence enabled!')
+
+                // return signInWithEmailAndPassword(auth, email, password)
             })
             .catch((error) => {
                 // Handle Errors here.
-                var errorCode = error.code
-                var errorMessage = error.message
-                console.log('Error when setting Auth Local Persistance:', error.message)
+                const errorCode = error.code
+                const errorMessage = error.message
+                console.log('[ initFirebase :: Auth Presistence ] Error:', error.message)
             })
+
+        // Habilitamos persistencia de datos de firestore
+        // https://firebase.google.com/docs/firestore/manage-data/enable-offline
+        enableIndexedDbPersistence(state.db).catch((err) => {
+            if (err.code == 'failed-precondition') {
+                // Multiple tabs open, persistence can only be enabled
+                // in one tab at a a time.
+                // ...
+                console.log('[ initFirebase :: Db persistance failed-precondition! ]')
+            } else if (err.code == 'unimplemented') {
+                // The current browser does not support all of the
+                // features required to enable persistence
+                // ...
+                console.log('[ initFirebase :: Db persistance unavailable in this browser! ]')
+            }
+        })
     } else {
-        db = auth = firebase.auth() // firebase.firestore()
-        fireApp = firebase
+        console.log('[ initFirebase :: Firebase Apps ready ]')
+        state.fireApp = initializeApp(config)
+        state.db = getFirestore(state.fireApp)
+        state.auth = getAuth(state.fireApp)
     }
 
-    firebase.auth().languageCode = 'es'
+    // console.log('firestore:', state.db)
+    // console.log('firebaseAuth:', state.auth)
+
+    // cleanup subscription
+    return () => {
+        console.log('Unsubscribe to Auth listener')
+        unsubscribe && unsubscribe()
+    }
 }
 
-export { db, auth, fireApp }
+const getFirebaseAuth = (props) => {
+    return state.auth
+}
+
+const getFirebaseFirestore = (props) => {
+    return state.db
+}
+
+const getFireApp = (props) => {
+    return state.fireApp
+}
+
+const getFirebaseConfig = (props) => {
+    return config
+}
+
+const getUser = () => {
+    return state.user
+}
+
+export {
+    getFirebaseFirestore,
+    getFirebaseAuth,
+    getFireApp,
+    getFirebaseConfig,
+    getUser,
+    signOut,
+    onAuthStateChanged,
+    GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+}

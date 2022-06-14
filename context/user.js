@@ -1,29 +1,57 @@
+// React
 import React from 'react'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+
+// NextJs
+import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
+
+// Own
 import { mapUserData } from '../utils/auth/mapUserData'
-import { removeUserCookie, setUserCookie, getUserFromCookie } from '../utils/auth/userCookies'
 
-import { fuego } from '@nandorojo/swr-firestore'
+// Not used with firebase:
+// import { removeUserCookie, setUserCookie, getUserFromCookie } from '../utils/auth/userCookies'
 
+// https://firebase.google.com/docs/auth/web/google-signin
+import initFirebase from '../utils/auth/initFirebase'
+import { getFirebaseAuth, getFireApp, getFirebaseConfig, onAuthStateChanged, getUser, signOut } from '../utils/auth/initFirebase'
+
+// react context
 const UserStateContext = React.createContext()
 
 export function UserProvider({ children }) {
-    const [user, setUser] = React.useState()
+    const [user, setUser] = React.useState(null)
     const router = useRouter()
 
-    const logout = () => {
-        return fuego
-            .auth()
-            .signOut()
-            .then(() => {
-                // Sign-out successful.
-                router.push('/signin')
-            })
-            .catch((e) => {
-                console.error(e)
-            })
+    initFirebase()
+    const firebaseConfig = getFirebaseConfig()
+    const firebaseApp = getFireApp()
+    const firebaseAuth = getFirebaseAuth()
+
+    const logout = async () => {
+        try {
+            await signOut(firebaseAuth)
+            // Sign-out successful.
+            router.push('/signin')
+        } catch (e) {
+            console.error('[ UserProvider :: logout ] ERROR:', e)
+        }
     }
+
+    useEffect(() => {
+        console.log('[ userProvider :: onUserChanged ] User:', user)
+        if (user && user?.id) {
+            console.log('User signed in...')
+            if (router.route == '/signin') {
+                router.push('/')
+            }
+        } else {
+            if (router.route != '/signin') {
+                router.push('/signin')
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user])
 
     useEffect(() => {
         // Firebase updates the id token every hour, this
@@ -31,37 +59,32 @@ export function UserProvider({ children }) {
         // both kept up to date
         console.log('iniciando useUser...')
 
-        let unsubscribe = fuego.auth().onIdTokenChanged(async (user_) => {
-            // Adds an observer for changes to the signed-in user's ID token, which includes sign-in, sign-out, and token refresh events.
-            // This method has the same behavior as firebase.auth.Auth.onAuthStateChanged had prior to 4.0.0.
-            console.log('On Id-Token-Changed...')
-            if (user_) {
-                const _user_ = await mapUserData(user_) //data coming from firebase auth. Este se va a la cookie
-                console.log('Setting user cookie...')
-                setUserCookie(_user_) // only needed data for the auth cookie
-                setUser(_user_)
+        const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                console.log('[ userProvider :: onAuthStateChanged ] User:', user)
+                mapUserData(user)
+                    .then((_user) => {
+                        setUser(_user)
+                        console.log('[ userProvider :: onAuthStateChanged :: mapUserData ] USER:', _user)
+                    }) //data coming from firebase auth. Este se va a la cookie
+                    .catch((err) => {
+                        setUser()
+                        console.log('[ userProvider :: onAuthStateChanged :: mapUserData ] ERROR:', err)
+                    })
             } else {
-                console.log('Removiendo cookie/user...')
-                removeUserCookie()
-                setUser()
+                console.log('[ initFirebase :: onAuthStateChanged ] NO USER')
             }
         })
-
-        const userFromCookie = getUserFromCookie()
-        if (!userFromCookie) {
-            console.log('No USER from COOKIE:', userFromCookie)
-            router.push('/signin')
-            return
-        }
-
-        console.log('Setting user from cookie...')
-        setUser(userFromCookie)
 
         // cleanup subscription
         return () => {
             console.log('Unsubscribe to Auth listener')
             unsubscribe && unsubscribe()
         }
+        // cleanup subscription
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

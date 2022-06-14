@@ -3,16 +3,19 @@ import { useRouter } from 'next/router'
 import { removeUserCookie, setUserCookie, getUserFromCookie } from './userCookies'
 import { mapUserData } from './mapUserData'
 
-import { fuego } from '@nandorojo/swr-firestore'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
 
 const useUser = () => {
     const [user, setUser] = useState()
     const router = useRouter()
 
+    const firebaseAuth = firebase?.apps?.length > 0 ? firebase?.app()?.auth() : firebase?.initializeApp(firebaseConfig)?.auth()
+
     const logout = () => {
-        return fuego
-            .auth()
-            .signOut()
+        return firebaseAuth
+            ?.signOut()
             .then(() => {
                 // Sign-out successful.
                 router.push('/signin')
@@ -28,7 +31,7 @@ const useUser = () => {
         // both kept up to date
         console.log('iniciando useUser...')
 
-        let unsubscribe = fuego.auth().onIdTokenChanged(async (user_) => {
+        let unsubscribe = firebaseAuth?.onIdTokenChanged(async (user_) => {
             // Adds an observer for changes to the signed-in user's ID token, which includes sign-in, sign-out, and token refresh events.
             // This method has the same behavior as firebase.auth.Auth.onAuthStateChanged had prior to 4.0.0.
             console.log('On Id-Token-Changed...')
