@@ -450,6 +450,7 @@ const FormaExpediente = (props) => {
                                         name: 'enfermedad',
                                         cellType: 'dropdown',
                                         title: 'Condición médica',
+                                        hasNone: true,
                                         choices: [
                                             'Alergia',
                                             'Anciedad, Depresión o Enfermedad Psiquiátrica',
@@ -464,8 +465,7 @@ const FormaExpediente = (props) => {
                                     {
                                         name: 'descripcion_enfermedad',
                                         cellType: 'text',
-                                        title: 'Describe',
-                                        isRequired: true,
+                                        title: 'Describa',
                                     },
                                 ],
                             },
