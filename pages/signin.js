@@ -4,166 +4,84 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 
 // Material UI
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { makeStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
-import Box from '@material-ui/core/Box'
-import Container from '@material-ui/core/Container'
-import Divider from '@material-ui/core/Divider'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import Switch from '@material-ui/core/Switch'
-import FormGroup from '@material-ui/core/FormGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
+
+import CssBaseline from '@mui/material/CssBaseline'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import Container from '@mui/material/Container'
+import Paper from '@mui/material/Paper'
+import Link from '@mui/material/Link'
+import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormHelperText from '@mui/material/FormHelperText'
+import FormGroup from '@mui/material/FormGroup'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 // Animations
 import { motion } from 'framer-motion'
 import { AnimateUp } from '../utils/motion-variants'
 
-// The signin page needs to be light.. for now.
-import { ThemeProvider } from '@material-ui/core/styles'
-import { temaLight } from '../style/temaCuentameApp'
-
+// Firbase
 import FirebaseAuth from '../components/FirebaseAuth'
 
-// Style
-const useStyles = makeStyles((theme) => ({
-    root: {
-        padding: '12px',
-        flexFlow: 'column wrap',
-        alignItems: 'center',
-        maxWidth: '400px',
-        minWidth: '350px',
-        borderRadius: '20px',
-        backgroundColor: 'white',
-        // backgroundImage: 'url("/cuentameapp.png")',
-        backgroundSize: '56%',
-        backgroundOrigin: 'padding-box',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.4)',
-        display: 'flex',
-    },
-    centrado: {
-        display: 'flex',
-        flexFlow: 'column wrap',
-        alignItems: 'center',
-        width: '100vw',
-    },
-    titulo: {
-        fontSize: '2rem',
-        fontWeight: 100,
-        marginTop: 4,
-        marginBottom: 0,
-        fontFamily:
-            '"Fira Sans Extra Condensed","-apple-system", "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto Condensed", "Source Sans Pro", Cantarell, Lato, Candara,"Segoe UI",  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-    },
-    subTitulo: {
-        fontSize: '1.5rem',
-        fontWeight: 300,
-        marginTop: 0,
-        marginBottom: 1,
-        fontFamily:
-            '"Fira Sans Extra Condensed","-apple-system", "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto Condensed", "Source Sans Pro", Cantarell, Lato, Candara,"Segoe UI",  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-    },
-    leyenda: {
-        fontSize: '0.8rem',
-        fontWeight: 100,
-        marginTop: -8,
-        marginBottom: 1,
-        fontFamily:
-            '"Fira Sans Extra Condensed","-apple-system", "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto Condensed", "Source Sans Pro", Cantarell, Lato, Candara,"Segoe UI",  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-    },
-    paper: {
-        marginTop: theme.spacing(8),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
-        color: 'rgba(0,0,0,0.7)!important',
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
-    },
-    botonSignin: {
-        margin: theme.spacing(1, 2, 1),
-    },
-    botonSignup: {
-        margin: theme.spacing(1, 2, 1),
-    },
-    spanOr: {
-        margin: theme.spacing(1.2),
-    },
-    cajaBotones: {
-        alignSelf: 'end',
-    },
-    switchLabel: {
-        color: theme.palette.secondary.dark,
-        fontWeight: '900 !important',
-    },
-    switchBase: {
-        color: theme.palette.secondary.light,
-        '&$checked': {
-            color: theme.palette.secondary.dark,
-        },
-        '&$checked + $track': {
-            backgroundColor: theme.palette.secondary.dark,
-        },
-    },
-    checked: {},
-    track: {},
-}))
+// Tema
+import ThemeProvider from '../theme'
+// import theme from '../theme/temaLight'
 
-const Signin = () => {
-    const classes = useStyles()
+import { useUserState } from '../context/user'
+
+const Signin = (props) => {
     const router = useRouter()
+    const { user } = useUserState()
 
-    if (typeof user === 'undefined' || !user) {
-        return (
-            <>
-                <Head>
-                    <title>cuentameSiS</title>
-                    <meta charSet='utf-8' />
-                    <meta name='description' content='cuentameSiS' />
-                    <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-                    <link rel='icon' href='/favicon-32x32.png' />
-                </Head>
-                <ThemeProvider theme={temaLight}>
-                    <Container component='main' maxWidth='xl' className='main-container-signin'>
-                        <CssBaseline />
-                        <motion.div
-                            positionTransition
-                            initial={AnimateUp.initial}
-                            animate={AnimateUp.animate}
-                            exit={AnimateUp.exit}>
-                            <div className={classes.centrado}>
-                                <div className={classes.root}>
-                                    <h2 className={classes.titulo}>Cuentame SiS</h2>
-                                    <span className={classes.leyenda}>Student Information System</span>
-                                    <h5 className={classes.subTitulo}>Inscripciones</h5>
-                                    <Avatar className='avatar-signin' src='/cuentameapp.png' variant='square' />
-                                    <FirebaseAuth />
-                                </div>
+    // if (typeof user === 'undefined' || !user) {
+    return (
+        <div className='flex flex-col items-center justify-center min-h-screen bg-orange-300'>
+            {/* red-400 orange-300 amber-500 orange-400 purple-200 */}
+            <Head>
+                <title>cuentameSiS</title>
+                <meta charSet='utf-8' />
+                <meta name='description' content='cuentameSiS' />
+                <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+                <link rel='icon' href='/favicon-32x32.png' />
+            </Head>
+            <ThemeProvider>
+                <Container
+                    component='main'
+                    className='flex flex-col items-center justify-center flex-1 text-center sm:min-w-[350px] min-w-screen min-h-[600px] sm:min-h-[660px]'>
+                    <CssBaseline />
+                    <motion.div initial={AnimateUp.initial} animate={AnimateUp.animate} exit={AnimateUp.exit}>
+                        <div className='relative bg-white rounded-2xl shadow-2xl sm:min-w-[350px] min-w-[330px] min-h-[600px] sm:min-h-[660px]'>
+                            <div className='relative flex flex-row flex-nowrap justify-center -inset-0 p-3 rounded-t-2xl bg-slate-100 overflow-hidden'>
+                                <img className='w-[12rem] sm:w-[20rem]' src='/colegioanahuac.svg' />
                             </div>
-                        </motion.div>
-                    </Container>
-                </ThemeProvider>
-            </>
-        )
-    } else if (typeof user !== 'undefined' && user) {
-        return (
-            <>
-                <div className='spinner'></div>
-            </>
-        )
-    }
+                            <div className='absolute inset-x-0 bottom-0 flex flex-col flex-nowrap justify-center p-3 rounded-b-2xl bg-slate-50 overflow-hidden'>
+                                <div className='flex flex-row items-center justify-between w-full'>
+                                    <p className='text-2xl sm:text-3xl font-thin text-neutral-400 font-especial subpixel-antialiased'>
+                                        Cuentame SiS
+                                    </p>
+                                    <img className='w-[3.5rem] sm:w-[4.5rem]  mb-0' src='/cuentameapp.png' />
+                                </div>
+                                <span className='text-sm subpixel-antialiased font-especial font-light tracking-tighter text-neutral-300 self-start -mt-[1.4rem]'>
+                                    Student Information System
+                                </span>
+                            </div>
+                            <div className='flex flex-col items-center justify-center w-full'>
+                                <p className='text-lg sm:text-xl font-bold text-neutral-500 mt-2'>Sistema de Inscripciones</p>
+                                <FirebaseAuth />
+                            </div>
+                        </div>
+                    </motion.div>
+                </Container>
+            </ThemeProvider>
+        </div>
+    )
 }
 
 export default Signin

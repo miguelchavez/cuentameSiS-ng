@@ -1,16 +1,23 @@
-import '../style/global.scss'
+import '../styles/global.css' // Para tailwindcss
+import '../styles/fonts.css' // fuentes de google
+
+import * as React from 'react'
+import PropTypes from 'prop-types'
+import Head from 'next/head'
+import CssBaseline from '@mui/material/CssBaseline'
+import { CacheProvider } from '@emotion/react'
+import createEmotionCache from '../createEmotionCache'
 
 import { useState, useEffect } from 'react'
 import { SnackbarProvider } from 'notistack'
-import { ThemeProvider } from '@material-ui/core/styles'
-import { temaLight, temaDark } from '../style/temaCuentameApp'
-import useDarkMode from 'use-dark-mode'
-import React from 'react'
+import ThemeProvider from '../theme'
+import theme from '../theme/temaLight'
+import ScrollToTop from '../components/ScrollToTop'
 
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
-import { Fuego, FuegoProvider } from '@nandorojo/swr-firestore'
+import { Fuego, FuegoProvider } from 'swr-firestore-v9'
+
+import initFirebase from '../utils/auth/initFirebase'
+import { getFirebaseAuth, getFireApp, getFirebaseConfig } from '../utils/auth/initFirebase'
 
 // Segunda BD de respaldo
 import PouchDB from 'pouchdb'
@@ -21,35 +28,33 @@ import { Provider } from 'use-pouchdb'
 
 import { UserProvider } from '../context/user'
 import Layout from '../components/layout'
+// import { auth } from 'firebase-admin'
 
-const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-}
+export default function MyApp(props) {
+    // Client-side cache, shared for the whole session of the user in the browser.
+    const clientSideEmotionCache = createEmotionCache()
 
-const fuego = new Fuego(firebaseConfig)
-
-export default function MyApp({ Component, pageProps, router }) {
+    const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
     const [locale, setLocale] = useState('esES')
-    const { value: isDark } = useDarkMode(true)
-    const [darkMode, setDarkMode] = useState(isDark) // default mode based on useDarkMode.
-    const [tema, setTema] = useState(temaLight)
+    const [darkMode, setDarkMode] = useState(false) // default mode based on useDarkMode.
+    const [tema, setTema] = useState(theme)
+    const [userDb, setUserDb] = useState(new PouchDB('local'))
+
+    const [titulo, setTitulo] = useState('Inscripciones Colegio Anáhuac')
+
+    // Init Firebase
+    initFirebase()
+    const firebaseConfig = getFirebaseConfig()
+
+    const fuego = new Fuego(firebaseConfig)
 
     // PouchDB.plugin(Authentication)
     PouchDB.plugin(PouchDBFind)
 
-    // const { user, logout } = useUser()
-    const [userDb, setUserDb] = useState(new PouchDB('local'))
-
     // change theme when mode changes (via toggle on the Appbar)
-    useEffect(() => {
-        console.log('darkMode Changed by the user to:', darkMode)
-        setTema(darkMode ? temaDark : temaLight)
-    }, [darkMode])
+    // useEffect(() => {
+    //     setTema(darkMode ? temaDark : temaLight)
+    // }, [darkMode])
 
     // useEffect(() => {
     //     if (user && user.id) {
@@ -58,15 +63,30 @@ export default function MyApp({ Component, pageProps, router }) {
     //     }
     // }, [user])
 
-
     return (
-        <>
+        <CacheProvider value={emotionCache}>
+            <Head>
+                <meta name='viewport' content='initial-scale=1, width=device-width' />
+            </Head>
             <Provider databases={{ userDb }} default='userDb'>
                 <FuegoProvider fuego={fuego}>
                     <UserProvider>
                         <ThemeProvider theme={tema}>
+                            <CssBaseline />
+                            <ScrollToTop />
                             <SnackbarProvider maxSnack={6}>
-                                {!router.pathname.startsWith('/signin') ? (<Layout darkMode={darkMode} setDarkMode={setDarkMode} titulo='Inscripciones Colegio Anáhuac'>
+                                {!router.pathname.startsWith('/signin') ? (
+                                    <Layout darkMode={darkMode} setDarkMode={setDarkMode} titulo={titulo}>
+                                        <Component
+                                            {...pageProps}
+                                            key={router.route}
+                                            tema={tema}
+                                            darkMode={darkMode}
+                                            setDarkMode={setDarkMode}
+                                            setTitulo={setTitulo}
+                                        />
+                                    </Layout>
+                                ) : (
                                     <Component
                                         {...pageProps}
                                         key={router.route}
@@ -74,18 +94,18 @@ export default function MyApp({ Component, pageProps, router }) {
                                         darkMode={darkMode}
                                         setDarkMode={setDarkMode}
                                     />
-                                </Layout>):(<Component
-                                        {...pageProps}
-                                        key={router.route}
-                                        tema={tema}
-                                        darkMode={darkMode}
-                                        setDarkMode={setDarkMode}
-                                    />)}
+                                )}
                             </SnackbarProvider>
                         </ThemeProvider>
                     </UserProvider>
                 </FuegoProvider>
             </Provider>
-        </>
+        </CacheProvider>
     )
+}
+
+MyApp.propTypes = {
+    Component: PropTypes.elementType.isRequired,
+    emotionCache: PropTypes.object,
+    pageProps: PropTypes.object.isRequired,
 }
