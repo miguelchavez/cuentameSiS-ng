@@ -46,7 +46,7 @@ const SurveyComponent = ({ questions, tipo, data, update: updateDoc, set: setDoc
         questionsProgressText: 'Completado {0}/{1}',
         optionsCaption: 'Seleccione...',
         addColumn: 'Agregar columna',
-        addRow: 'Agregar renglon',
+        addRow: 'Agregar fila',
         removeRow: 'Remover',
         emptyRowsText: 'No hay renglones.',
         addPanel: 'Agregar nuevo',
@@ -182,7 +182,8 @@ const SurveyComponent = ({ questions, tipo, data, update: updateDoc, set: setDoc
                 console.log('PERFIL CREATE NEW')
                 const fecha = new Date()
                 const docRef = doc(firestore, 'usuarios', user?.id)
-                const next = survey.currentPageNo >= 3 ? 0 : survey.currentPageNo + 1
+                // const next = survey.currentPageNo >= 3 ? 0 : survey.currentPageNo + 1
+                const next = 1 // Al crear el perfil, debe haber terminado la pagina 0, por lo que debera ser 1.
                 const datos = {
                     ...survey.data,
                     owner: user?.id,
