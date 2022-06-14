@@ -87,7 +87,7 @@ const FirebaseAuth = (props) => {
     const signin = () => {
         const email = username.trim().toLowerCase()
         if (email) {
-            signInWithEmailAndPassword(firebaseAuth(), email, password)
+            signInWithEmailAndPassword(firebaseAuth, email, password)
                 .then(async (_user) => {
                     // Signed in
                     setError('')
