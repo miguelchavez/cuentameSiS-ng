@@ -10,6 +10,8 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
+import Box from '@mui/material/Box'
+import Avatar from '@mui/material/Avatar'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
@@ -76,12 +78,28 @@ const TarjetaExpediente = (props) => {
                         }}>
                         <CardMedia component='img' image='/colegioanahuac.svg' alt='logo' className='p-4' />
                         <CardContent>
-                            <Typography gutterBottom variant='h5' component='div'>
-                                {expediente?.nombre} {expediente?.apaterno} {expediente?.amaterno}
-                            </Typography>
-                            <Typography variant='body2' color='text.secondary' className='text-xs'>
-                                {expediente.id}
-                            </Typography>
+                            <Box className='flex flex-row items-center'>
+                                <Box className='avatar m-1 mr-2'>
+                                    <Avatar
+                                        className='w-[52px] h-[52px]'
+                                        variant='rounded'
+                                        src={expediente.genero == 'Femenino' ? '/girl1.svg' : '/boy.svg'}
+                                    />
+                                </Box>
+                                <Box className='cajaUsuario'>
+                                    <Box className='cajaDatos'>
+                                        <p className='text-sm font-normal text-slate-500 antialiased'>
+                                            {expediente?.nombre} {expediente?.apaterno} {expediente?.amaterno}
+                                        </p>
+                                        <div className='text-sm flex flex-row items-center flex-auto justify-items-start'>
+                                            <span className='text-slate-400 m-1'>Grado solicitado</span>
+                                            <span className='text-black bg-slate-300 m-1 rounded-md pr-2 pl-2'>
+                                                {expediente.grado_solicitado}
+                                            </span>
+                                        </div>
+                                    </Box>
+                                </Box>
+                            </Box>
                         </CardContent>
                     </CardActionArea>
                     <CardActions>
