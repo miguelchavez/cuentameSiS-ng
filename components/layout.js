@@ -29,7 +29,7 @@ import Button from '@mui/material/Button'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { motion } from 'framer-motion'
-import { AnimateFadeIn } from '../utils/motion-variants'
+import { AnimateFadeIn, AnimateUp } from '../utils/motion-variants'
 
 import { useDocument } from 'swr-firestore-v9'
 

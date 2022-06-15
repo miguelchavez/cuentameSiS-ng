@@ -10,8 +10,7 @@ import { useSnackbar } from 'notistack'
 
 //motion
 import { motion } from 'framer-motion'
-import { AnimateUp } from '../utils/motion-variants'
-import { Container_, FadeInUp } from '../utils/motion-variants'
+import { AnimateUp, Container_, FadeInUp } from '../utils/motion-variants'
 
 // MUI
 import Container from '@mui/material/Container'
@@ -550,11 +549,13 @@ const FormaExpediente = (props) => {
     }
 
     return (
-        <Container maxWidth='md'>
-            <Box sx={{ my: 2 }}>
-                <SurveyComponent tipo={tipo} questions={expedienteJson} data={data} update={update} set={set} />
-            </Box>
-        </Container>
+        <motion.div initial={AnimateUp.initial} animate={AnimateUp.animate} exit={AnimateUp.exit}>
+            <Container maxWidth='md'>
+                <Box sx={{ my: 2 }}>
+                    <SurveyComponent tipo={tipo} questions={expedienteJson} data={data} update={update} set={set} />
+                </Box>
+            </Container>
+        </motion.div>
     )
 }
 

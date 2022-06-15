@@ -17,7 +17,7 @@ import { useRouter } from 'next/router'
 import { useDocument } from 'swr-firestore-v9'
 
 const TarjetaExpediente = (props) => {
-    const { expediente, setTitulo } = props
+    const { expediente } = props
     const router = useRouter()
 
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -46,11 +46,6 @@ const TarjetaExpediente = (props) => {
         deleteDocument(expediente?.id)
         setDialogOpen(false)
     }
-
-    useEffect(() => {
-        // set page title
-        setTitulo(`Editando expediente de ${expediente?.nombre}`)
-    }, [])
 
     return (
         <div>

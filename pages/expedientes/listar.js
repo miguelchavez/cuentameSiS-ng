@@ -30,7 +30,6 @@ import { useCollection, useDocument, getFuego } from 'swr-firestore-v9'
 
 // Own
 import TarjetaExpediente from '../../components/tarjetaExpediente'
-import { getMunicipios } from '../../utils/strings'
 import { useUserState } from '../../context/user'
 
 export default function listadoExpedientes(props) {
@@ -83,7 +82,7 @@ export default function listadoExpedientes(props) {
 
             {/* listado */}
 
-            <motion.div variants={Container} initial='hidden' animate='show'>
+            <motion.div initial={AnimateUp.initial} animate={AnimateUp.animate} exit={AnimateUp.exit}>
                 <Grid container spacing={3} justify='flex-start' alignItems='flex-start'>
                     {/* Cards  */}
                     {expedientes && expedientes.length ? (
@@ -95,7 +94,6 @@ export default function listadoExpedientes(props) {
                                         // userMeta={userMeta}
                                         // localDb={alfredLocalDb}
                                         expediente={expediente}
-                                        setTitulo={setTitulo}
                                     />
                                 </motion.div>
                             </Grid>

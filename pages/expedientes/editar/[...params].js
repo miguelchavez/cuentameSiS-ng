@@ -69,7 +69,7 @@ export default function editarExpedientes(props) {
     return (
         <Container maxWidth='md'>
             {/* editor de Expedientes */}
-            <motion.div variants={Container} initial='hidden' animate='show'>
+            <motion.div initial={AnimateUp.initial} animate={AnimateUp.animate} exit={AnimateUp.exit}>
                 <Grid container spacing={3} justify='flex-start' alignItems='flex-start'>
                     <Grid item key='el_expediente' className=''>
                         <motion.div positionTransition key={expediente?.id} variants={Item}>

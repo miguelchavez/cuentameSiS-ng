@@ -10,8 +10,7 @@ import { useSnackbar } from 'notistack'
 
 //motion
 import { motion } from 'framer-motion'
-import { AnimateUp } from '../utils/motion-variants'
-import { Container_, FadeInUp } from '../utils/motion-variants'
+import { Container_, FadeInUp, AnimateUp } from '../utils/motion-variants'
 
 // MUI
 import Container from '@mui/material/Container'
@@ -690,7 +689,9 @@ const perfil = (props) => {
                     de información de los padres y un responsable del estudiante ó los estudiantes que tenga a su cargo para el proceso
                     de inscricpión.
                 </Typography>
-                <SurveyComponent tipo='perfil' questions={preguntasJson} data={perfil} update={update} set={set} />
+                <motion.div initial={AnimateUp.initial} animate={AnimateUp.animate} exit={AnimateUp.exit}>
+                    <SurveyComponent tipo='perfil' questions={preguntasJson} data={perfil} update={update} set={set} />
+                </motion.div>
             </Box>
         </Container>
     )
