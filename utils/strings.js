@@ -728,7 +728,7 @@ const getMunicipios = (estado) => {
             ],
         },
         {
-            estado: 'México',
+            estado: 'Estado de México',
             mun: [
                 'Acambay de Ruíz Castañeda',
                 'Acolman',
@@ -2621,8 +2621,11 @@ const getMunicipios = (estado) => {
         },
     ]
 
-    const data = sources[sources.map((e) => e.estado).indexOf(estado)]
-    return typeof data !== 'undefned' ? [] : data.mun
+    const data = sources.filter((s) => s.estado == estado)
+    if (data.length == 1) {
+        // console.log('Data para ', estado, ' :', data)
+        return data[0].mun
+    } else return []
 }
 
 const getMd5 = async (text) => {
