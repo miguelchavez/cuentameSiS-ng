@@ -1020,7 +1020,7 @@ const FormaExpediente = (props) => {
                                         hasNone: true,
                                         choices: [
                                             'Alergia',
-                                            'Anciedad, Depresión o Enfermedad Psiquiátrica',
+                                            'Ansiedad, Depresión o Enfermedad Psiquiátrica',
                                             'Colesterol o Trigliceridos Altos',
                                             'Diabetes',
                                             'Presión Arterial Alta',
